@@ -127,7 +127,7 @@ bot.on("ready", function () {
 
 // Команды
 const commands = {
-	"v!help": {
+	"help": {
 		process: function (msg, suffix, embed) {
 			const list = ["Bot - Бот",
 			"** Тег команды: "+config.prefix+" **",
