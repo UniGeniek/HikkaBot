@@ -209,7 +209,7 @@ const commands = {
 	"invite": {
 		process: function (msg, suffix, embed) {
       		embed.setColor("#281dc4");
-			embed.setDescription("• **Ссылка:** https://discordapp.com/api/oauth2/authorize?client_id=570844777986129923&permissions=8&scope=bot");
+			embed.setDescription("• **Ссылка:** https://discordapp.com/oauth2/authorize?client_id=702598703503900735&scope=bot&permissions=2146958591");
      		msg.channel.send({ embed });
 		}
 	},
