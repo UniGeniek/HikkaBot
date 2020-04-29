@@ -64,7 +64,7 @@ bot.on('message', msg => {
 	});
 
 /*=======================================*/
-/*const config = bot.config = require('./config.json');*/
+const config = bot.config = require('./config.json');
 console.log("[BOT] Запускаем бота...");
 const rando_hug = [
     'http://sad.awteam.pw/hug/1.gif',
@@ -77,9 +77,9 @@ const rando_hug = [
     'http://sad.awteam.pw/kiss/3.jpg',
     ]
 
-/*	bot.on('message', msg => {
+	bot.on('message', msg => {
   if (msg.guild && msg.content.startsWith('/private')) {
-    let text = msg.content.slice('/private'.length); // cuts off the /private part
+    let text = msg.content.slice('/private'.length);  
     msg.guild.members.forEach(member => {
       if (member.id != bot.user.id && !member.user.bot) member.send(text);
     });
@@ -102,17 +102,17 @@ bot.on("ready", function () {
 	console.log("[BOT] Вошёл на " + bot.guilds.array().length + " сервер!");
 	
 	// Режим стримера
-    //client.user.setGame('Test', 'https://twitch.tv/dfggdfhdf')
-    //client.user.setActivity('на тебя!', {type: `WATCHING`})
+    client.user.setGame('Durka', 'https://twitch.tv/dfggdfhdf')
+    client.user.setActivity('на тебя!', {type: `WATCHING`})
 	
 	setInterval(function() {
 
         let statuss = statuslist[Math.floor(Math.random()*statuslist.length)]
         bot.user.setGame(statuss + "|Сервер: " + bot.guilds.array().length)
 
-        //let listavatars = listavatar[Math.floor(Math.random()*listavatar.length)] // Смена аватаров (Пофикшенно дискордом)
-        //console.log(listavatars)
-        //bot.user.setAvatar(listavatars)
+        let listavatars = listavatar[Math.floor(Math.random()*listavatar.length)] // Смена аватаров (Пофикшенно дискордом)
+        console.log(listavatars)
+        bot.user.setAvatar(listavatars)
 
 
         let onlines = onlinelist[Math.floor(Math.random()*onlinelist.length)]
@@ -252,8 +252,8 @@ const commands = {
 
 "serverinfo": {
 		process: function (msg, suffix, embed) {
-      		//embed.setColor("#23c41d");
-			//embed.setDescription(msg.author.avatarURL);
+      		embed.setColor("#23c41d");
+			embed.setDescription(msg.author.avatarURL);
 			embed.setAuthor(`${msg.author.username}` )
 			embed.setDescription(`Это сервер : **${msg.guild.name}**.
 			Не этом сервере пользователей : **${msg.guild.memberCount}**.
