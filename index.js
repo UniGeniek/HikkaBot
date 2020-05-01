@@ -439,4 +439,4 @@ bot.on('voiceStateUpdate', async (oldMember, newMeber) => {
   }
 })
 
-bot.login(config.token);
+bot.login(process.env.token);
