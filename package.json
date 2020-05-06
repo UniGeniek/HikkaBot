@@ -1,14 +1,33 @@
 {
-  "name": "bot",
+  "name": "discordbotnode",
   "version": "1.0.0",
   "description": "",
   "main": "bot.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cp -r node_modules/m3u8stream/dist node_modules/m3u8stream/lib && node bot.js"
   },
-  "author": "",
+  "author": "Viktor Svensson",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.3.0"
+    "@discordjs/uws": "^11.149.1",
+    "bufferutil": "^4.0.1",
+    "color-diff": "^1.1.0",
+    "discord.js": "^11.5.1",
+    "dotenv": "^5.0.1",
+    "erlpack": "github:hammerandchisel/erlpack",
+    "ffmpeg-binaries": "^4.0.0",
+    "fortnitetracker-7days-stats": "^3.3.1",
+    "jimp": "^0.2.28",
+    "libsodium-wrappers": "^0.7.5",
+    "node-opus": "^0.3.2",
+    "request": "^2.88.0",
+    "twemoji": "^12.1.2",
+    "youtube-finder": "^1.0.1",
+    "ytdl-core": "^1.0.7",
+    "ytdl-core-discord": "^1.0.3"
+  },
+  "engines": {
+    "node": "9.4.0"
   }
 }

@@ -1,104 +1,142 @@
-const botSettings = require("./botsettings.json");
-const Discord = require("discord.js");
-const fs = require("fs");
-const mysql = require("mysql");
+require('dotenv').config()
+const Discord = require('discord.js');
+const fs = require('fs');
+const cfg = require('./config.js');
 
-const prefix = botSettings.prefix;
+///////////////////////////////////////////////////////////////////////////////
 
-const bot = new Discord.Client({disableEveryone: true});
-bot.commands = new Discord.Collection();
+// bot client
+const client = new Discord.Client();
 
-fs.readdir("./cmds/", (err, files) =>{
-  if(err) console.err(err);
-
-  let jsfiles = files.filter(f => f.split(".").pop() === "js");
-  if(jsfiles.length <=0){
-    console.log("No commands to load!");
-    return;
-  }
-
-  console.log(`loading ${jsfiles.length} commands!`);
-
-  jsfiles.forEach((f, i) => {
-    let props = require(`./cmds/${f}`);
-    bot.commands.set(props.help.name, props);
-  });
-});
-
-
-bot.on("ready", async () => {
-  console.log(`Bot has started, with ${bot.users.size} users, in ${bot.channels.size} channels of ${bot.guilds.size} guilds.`);
-
-  bot.user.setActivity(`!help -- on ${bot.guilds.size} servers`);
-  bot.generateInvite(["ADMINISTRATOR"]).then(link => {
-    console.log(link);
-  }).catch(err =>{
-    console.log(err.stack);
-  });
-});
-
-
-
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "discord"
-});
-
-con.connect(err => {
-  if(err) throw err;
-  console.log("Connected to database!");
-});
-
-function generateXp(){
-  let max = 30;
-  let min = 10;
-
-  return Math.floor(Math.random() * (max - min + 1)) +10;
+// get config values.
+client.config = {
+    TOKEN: process.env.BOT_TOKEN,
+    TRN_APIKEY: process.env.TRN_APIKEY,
+    YOUTUBE_APIKEY: process.env.YOUTUBE_APIKEY,
+    OWNER_ID: cfg.config.OWNER_ID,
+    PREFIX: cfg.config.PREFIX,
+    IGNORE_CHANNELS: cfg.config.IGNORE_CHANNELS,
+    WELCOME_MESSAGE_CHANNEL: cfg.config.WELCOME_MESSAGE_CHANNEL
+};
+// let other files access config
+exports.config = () => {
+    return client.config;
 }
 
-bot.on("guildCreate", guild => {
-  // This event triggers when the bot joins a guild.
-  console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
-  bot.user.setActivity(`!help -- on ${bot.guilds.size} servers`);
-  con.query(`INSERT INTO guilds (id, name) VALUES ('${guild.id}', '${guild.name}')`);
+// let other files access commands
+exports.commands = () => {
+    return client.commands;
+}
+
+// add all commands
+client.commands = [];
+fs.readdir("./commands/", function(err, files){
+    files.forEach(f => {
+        const cmd = require(`./commands/${f}`);
+        client.commands.push(cmd);
+    });
 });
 
-bot.on("guildDelete", guild => {
-  // this event triggers when the bot is removed from a guild.
-  console.log(`I have been removed from: ${guild.name} (id: ${guild.id})`);
-    bot.user.setActivity(`!help -- on ${bot.guilds.size} servers`);
-    con.query(`DELETE FROM guilds WHERE id = '${guild.id}'`);
+///////////////////////////////////////////////////////////////////////////////
+
+client.on("ready", () => {
+    console.log("+--------------+");
+    console.log("|  BOT ONLINE  |");
+    console.log("+--------------+");
+    console.log(`| commands: ${client.commands.length} |`);
+    console.log(`| guilds:   ${client.guilds.array().length}  |`);
+    console.log(`| channels: ${client.channels.array().length} |`);
+    console.log("+--------------+");
+    client.user.setActivity(client.config.PREFIX + "help");
 });
 
-bot.on("message", async message => {
-  if(message.author.bot) return;
-  if(message.channel.type === "dm") return;
+client.on("guildMemberAdd", member => {
+    var guild = member.guild;
+    var channelToSend = null;
 
-  con.query(`SELECT * FROM xp WHERE id = '${message.author.id}'`, (err, rows) =>{
-    if(err) throw err;
-
-    let sql;
-
-    if(rows[0].guild !== message.guild.id){
-      sql = `INSERT INTO xp (id, xp, guild) VALUES ('${message.author.id}', ${generateXp()}, '${message.guild.id}')`;
-    }else{
-      let xp = rows[0].xp;
-      sql = `UPDATE xp SET xp = ${xp + generateXp()} WHERE id = '${message.author.id}' AND guild = '${message.guild.id}'`;
+    // if guild has a specified channel to use for welcome message
+    if(guild.id in client.config.WELCOME_MESSAGE_CHANNEL){
+        var channelId = client.config.WELCOME_MESSAGE_CHANNEL[guild.id];
+        channelToSend = guild.channels.get(channelId);
     }
-
-    con.query(sql);
-  })
-
-  let messageArray = message.content.split(" ");
-  let command = messageArray[0];
-  let args = messageArray.slice(1);
-
-  if(!command.startsWith(prefix)) return;
-
-  let cmd = bot.commands.get(command.slice(prefix.length));
-  if(cmd) cmd.run(bot, message, args, con);
+    // otherwise use the first channel where the bot can send messages
+    else{
+        channelToSend = guild.channels.filter(c => c.type === "text"
+                && c.permissionsFor(guild.client.user).has("SEND_MESSAGES"))
+                    .sort((a, b) => a.position - b.position
+                || Long.fromString(a.id).sub(Long.fromString(b.id)).toNumber())
+                    .first();
+    }
+    const emoji = client.emojis.find("name", "feelsgoodman");
+    channelToSend.send(`Welcome ${member.displayName}! ${emoji}`);
 });
 
-bot.login(botSettings.token);
+client.on("guildMemberRemove", member => {
+    var guild = member.guild;
+    var channelToSend = null;
+
+    // if guild has a specified channel to use for welcome (and goodbye) messages
+    if(guild.id in client.config.WELCOME_MESSAGE_CHANNEL){
+        var channelId = client.config.WELCOME_MESSAGE_CHANNEL[guild.id];
+        channelToSend = guild.channels.get(channelId);
+    }
+    // otherwise use the first channel where the bot can send messages
+    else{
+        channelToSend = guild.channels.filter(c => c.type === "text"
+                && c.permissionsFor(guild.client.user).has("SEND_MESSAGES"))
+                    .sort((a, b) => a.position - b.position
+                || Long.fromString(a.id).sub(Long.fromString(b.id)).toNumber())
+                    .first();
+    }
+    const emoji = client.emojis.find("name", "feelsbadman");
+    channelToSend.send(`${member.displayName} has left us ${emoji}`);
+});
+
+client.on("messageReactionAdd", (reaction, user) => {
+    if(reaction.emoji.id == "403289960884600832"    // "no"-emoji
+            && reaction.message.author == client.user   // only the bot's messages
+            && !user.bot){                          // only let humans react-delete
+        reaction.message.delete()
+            .then(msg => console.log("Deleted message by request from: "
+                                    + user.username))
+            .catch(console.error);
+    }
+});
+
+client.on("message", msg => {
+    // avoid spam channels
+    if(client.config.IGNORE_CHANNELS.includes(msg.channel.id)) return;
+
+    // log all messages read (not saved)
+    var u = msg.author.username;
+    var c = msg.channel.name;
+    if(c == undefined) c = "private";
+    var m = msg.content;
+    console.log("[" + c + "] " + u + ": " + m);
+
+    if(!m.startsWith(client.config.PREFIX)) return;
+    var args = m.substring(client.config.PREFIX.length).split(" ");
+    var cmdName = args[0].toLowerCase();
+
+    client.commands.forEach(command => {
+        if(cmdName === command.info.name || command.info.alias.includes(cmdName)){
+            // guild or private chat check
+            if(command.info.guildOnly && msg.channel.type === 'dm'){
+                msg.channel.send("This command unavailable in private chat :^(");
+                return;
+            }
+
+            // admin check
+            if(command.info.permission == "admin"
+                    && msg.author.id != client.config.OWNER_ID){
+                msg.channel.send("Admin only command :^)");
+            }else{
+                command.execute(client, msg, args);
+            }
+        }
+    });
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
+client.login(client.config.TOKEN);
