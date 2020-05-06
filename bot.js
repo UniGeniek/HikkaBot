@@ -74,4 +74,4 @@ bot.on("ready", () => {
 bot.user.setStatus("Все крутые")
 });
 
-bot.login(token);
+bot.login(process.env.token);
